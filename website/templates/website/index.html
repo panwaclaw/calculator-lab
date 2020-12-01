@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+
+    <title>Calculator!</title>
+  </head>
+  <body>
+    <div class="container-fluid pt-3">
+        <h3>Козловский Вячеслав Витальевич</h3>
+        <form id="calc">
+          {% csrf_token %}
+
+          <input type="number" name="a" min="-1000000000000.000000" max="1000000000000.000000" step="0.00000000000001" value="0">
+          <select name="sign1">
+            <option value="+" selected>+</option>
+            <option value="-">-</option>
+            <option value="*">*</option>
+            <option value="/">/</option>
+          </select>
+            <b>(</b>
+          <input type="number" name="b" min="-1000000000000.000000" max="1000000000000.000000" step="0.00000000000001" value="0">
+          <select name="sign2">
+            <option value="+" selected>+</option>
+            <option value="-">-</option>
+            <option value="*">*</option>
+            <option value="/">/</option>
+          </select>
+          <input type="number" name="c" min="-1000000000000.000000" max="1000000000000.000000" step="0.00000000000001" value="0">
+            <b>)</b>
+          <select name="sign3">
+            <option value="+" selected>+</option>
+            <option value="-">-</option>
+            <option value="*">*</option>
+            <option value="/">/</option>
+          </select>
+          <input type="number" name="d" min="-1000000000000.000000" max="1000000000000.000000" step="0.00000000000001" value="0">
+          <input type="submit">
+          <br>
+
+          <input type="radio" id="contactChoice1" name="roundtype" value="math" checked>
+          <label for="contactChoice1">Math</label>
+
+          <input type="radio" id="contactChoice2" name="roundtype" value="half_even">
+          <label for="contactChoice2">Half Even</label>
+
+          <input type="radio" id="contactChoice3" name="roundtype" value="trunc">
+          <label for="contactChoice3">Trunc</label>
+        </form>
+        <div>
+          <h5><b>Result: </b><div id="result"></div></h5>
+        </div>
+        <div id="error"></div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+    <script>
+      $('#calc').submit(function(e) {
+        $("#result").html('loading...');
+        e.preventDefault();
+        let csrftoken = $("[name=csrftoken]").val();
+        $.ajaxSetup({
+          beforeSend: function(xhr, settings) {
+            if (!this.crossDomain) {
+              xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            }
+          }
+        });
+        $.ajax({
+          type: "POST",
+          url: "/calc/",
+          data: $(this).serialize(),
+          success: function(r) {
+              console.log(r);
+            $('#result').html(r);
+            $('#error').html('');
+          },
+          error: function (r) {
+              console.log(r.responseText);
+            $("#error").html(r.responseText);
+            $('#result').html('');
+          }
+        });
+      });
+
+      $(function() {
+          $('input').keydown(function (e) {
+              if (e.key === 'e' || e.key === 'E' || e.key === '+') return false;
+          });
+      });
+    </script>
+
+  </body>
+</html>
